@@ -16,13 +16,11 @@ def load_map(filename):
 
 class Grid:
     def __init__(self):
-        self.day = 1
         self.cells_matrix = load_map("map.csv")
         self.width = len(self.cells_matrix[0])
         self.height = len(self.cells_matrix)
 
     def calculate_new_day(self):
-        self.day += 1
         for x in range(self.height):
             for y in range(self.width):
                 cell = self.cells_matrix[x][y]
