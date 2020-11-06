@@ -4,27 +4,6 @@ from grid import Grid
 
 CELL_SIZE = 40
 
-
-# def refresh_screen(grid, window):
-#     if grid.day >= 365:
-#         # window.after_cancel(update_job)
-#         # update_job = None
-#         pass
-#     else:
-#         grid.calculate_new_day()
-#         label.config(text="Generation {}".format(grid.day))
-#         # update canvas
-#         for x in range(GRID_WIDTH):
-#             for y in range(GRID_HEIGHT):
-#                 cell = matrix[y][x]
-#                 canvas.create_rectangle(x * CELL_SIZE, y * CELL_SIZE, (x + 1) * CELL_SIZE, (y + 1) * CELL_SIZE,
-#                                         fill=cell.get_color())
-#                 canvas.create_text((x + 0.3) * CELL_SIZE, (y + 0.7) * CELL_SIZE, text="{}C".format(cell.temperature))
-#                 canvas.create_text((x + 0.7) * CELL_SIZE, (y + 0.3) * CELL_SIZE, text="{}%".format(cell.cloudiness),
-#                                    fill="navy")
-#         window.after(50, refresh_screen(grid=matrix, window=window))
-
-
 class Gui:
     def __init__(self):
         self.grid = Grid()
@@ -64,7 +43,7 @@ class TimerUpdate:
         else:
             self.day += 1
             gui.grid.calculate_new_day()
-            gui.window.after(50, self.update)
+            gui.window.after(100, self.update)
             gui.label.config(text="Day {}".format(self.day))
             for x in range(gui.width):
                 for y in range(gui.height):
@@ -75,7 +54,6 @@ class TimerUpdate:
                     gui.canvas.itemconfig(cloud_id, text="{}%".format(cell.cloudiness))
 
 
-# update_job = window.after(50, refresh_screen(grid=grid, window=window))
 gui = Gui()
 tkinter.Button(text="Start", command=lambda: TimerUpdate(gui)).pack()
 gui.window.mainloop()

@@ -6,13 +6,14 @@ GLACIER = 'G'
 FOREST = 'F'
 CITY = 'C'
 
-CITY_DAY_AIR_POLLUTION = 40
+CITY_DAY_AIR_POLLUTION = 30
 
+# TODO check direction
 wind_direction = {
     1: (0, -1),  # NORTH
     2: (0, 1),  # SOUTH
     3: (1, 0),  # EAST
-    4: (-1, 0)   # WEST
+    4: (-1, 0)  # WEST
 }
 
 cell_color = {
@@ -36,7 +37,8 @@ class Cell:
         else:
             self.temperature = 20
         self.air_quality_index = 0  # air pollution in AQI(Air Quality Index) from 0 to 500
-        self.wind_speed = 0
+        # self.wind_speed = 0
+        self.wind_speed = random.randint(0, 2) # in cells
         self.wind_direction = wind_direction.get(random.randint(1, 4))
         self.cloudiness = random.randint(0, 5) * 10  # from 0 to 100%, when it's 100% - will rain
 
@@ -57,14 +59,12 @@ class Cell:
                 type_new = FOREST
 
         # evaporation of water forms clouds
-        if self.type == SEA and self.temperature > 10:
+        if self.type == SEA:
             self.cloudiness = self.cloudiness + 10
 
         # air pollution causes warming
         if self.air_quality_index > 100:
             temperature_new += int(self.air_quality_index / 100)
-
-        # TODO how to lower the temperature?
 
         # forest produces oxygen and decreases air pollution
         if self.type == FOREST:
@@ -80,6 +80,10 @@ class Cell:
         # heat dissolves glaciers
         if self.type == GLACIER and self.temperature > 0:
             type_new = SEA
+
+        # lower 0 sea became glacier
+        if self.type == SEA and self.temperature < 0:
+            type_new = GLACIER
 
         # high temperature kills city and forest
         if (self.type == CITY or self.type == FOREST) and self.temperature > 60:
