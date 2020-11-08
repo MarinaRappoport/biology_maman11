@@ -1,5 +1,3 @@
-import random
-
 SEA = 'S'
 LAND = 'L'
 GLACIER = 'G'
@@ -9,15 +7,15 @@ CITY = 'C'
 CITY_DAY_AIR_POLLUTION = 30
 
 wind_direction = {
-    1: (-1, 0, "", "↑", "⇈"),  # NORTH
-    2: (1, 0, "", "↓", "⇊"),  # SOUTH
-    3: (0, 1, "", "→", "⇉"),  # EAST
-    4: (0, -1, "", "←", "⇇")  # WEST
+    1: (-1, 0, "", "↑"),  # NORTH
+    2: (1, 0, "", "↓"),  # SOUTH
+    3: (0, 1, "", "→"),  # EAST
+    4: (0, -1, "", "←")  # WEST
 }
 
 cell_properties = {
     SEA: ('cyan', 10),
-    LAND: ('yellow', 20),
+    LAND: ('yellow', 25),
     GLACIER: ('white', -15),
     FOREST: ('forestgreen', 15),
     CITY: ('darkgrey', 20)
@@ -28,10 +26,13 @@ class Cell:
     def __init__(self, cell_type, counter):
         self.type = cell_type  # land, sea, glacier, forest, city
         self.temperature = cell_properties.get(self.type)[1]
-        self.air_quality_index = 0  # air pollution in AQI(Air Quality Index) from 0 to 500
-        self.wind_speed = counter % 2  # in cells
+        if self.type == CITY:
+            self.air_quality_index = 160
+        else:
+            self.air_quality_index = 0  # air pollution in AQI(Air Quality Index) from 0 to 500
+        self.wind_speed = counter % 2  # 0 - no wind, 1 - wind
         self.wind_direction = self.get_wind_direction((int(counter / 2) % 4 + 1))
-        self.cloudiness = counter % 10 * 10  # from 0 to 100%, when it's 100% - will rain
+        self.cloudiness = counter % 6 * 10  # from 0 to 100%, when it's 100% - will rain
 
     def day_transitions(self):
         # new values to apply:
@@ -44,9 +45,9 @@ class Cell:
             self.cloudiness = 0
             if self.temperature > 5:
                 temperature_new -= 2
-            air_quality_index_new = self.air_quality_index - 40
+            air_quality_index_new = self.air_quality_index - 30
             # land became forest in good ecology after rain
-            if self.type == LAND and self.air_quality_index < 100 and 10 <= self.temperature < 60:
+            if self.type == LAND and self.air_quality_index < 100 and 10 <= self.temperature < 50:
                 type_new = FOREST
 
         # evaporation of water forms clouds
@@ -58,16 +59,16 @@ class Cell:
             temperature_new += 1
         else:
             temperature_base = cell_properties.get(self.type)[1]
-            if temperature_new > temperature_base:
+            if temperature_new - temperature_base > 3:
                 temperature_new -= 1
-            else:
+            elif temperature_new - temperature_base < -1:
                 temperature_new += 1
 
         # forest produces oxygen and decreases air pollution
         if self.type == FOREST:
             air_quality_index_new -= 20
             # when pollution is high, forest dies
-            if self.air_quality_index >= 400:
+            if self.air_quality_index >= 500:
                 type_new = LAND
 
         if self.type == GLACIER:

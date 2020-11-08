@@ -1,6 +1,8 @@
 import tkinter
+import statistics
 
-from grid import Grid
+from cell import CITY, SEA, LAND, GLACIER, FOREST
+from grid import Grid, TEMP_AVERAGE, AQI_AVERAGE, ALL_TEMP_STATS, ALL_AQI_STATS
 
 CELL_WIDTH = 50
 CELL_HEIGHT = 30
@@ -8,10 +10,11 @@ CELL_HEIGHT = 30
 
 class Gui:
     def __init__(self):
+        self.inventory = {CITY: 0, SEA: 0, LAND: 0, GLACIER: 0, FOREST: 0}
         self.grid = Grid()
         matrix = self.grid.cells_matrix
         self.window = tkinter.Tk()
-        self.window.title("Maman 11")
+        self.window.title("Maman 11 by Marina Rappoport")
         self.label = tkinter.Label(text="Day 1")
         self.label.pack()
         self.width = len(matrix[0])
@@ -35,6 +38,8 @@ class Gui:
                 wind_id = self.canvas.create_text((x + 0.7) * CELL_WIDTH, (y + 0.7) * CELL_HEIGHT,
                                                   text="{}".format(cell.wind_direction[2 + cell.wind_speed]))
                 self.item_ids[y][x] = (cell_id, temp_id, cloud_id, aqi_id, wind_id)
+                self.inventory[cell.type] = self.inventory[cell.type] + 1
+        print(self.inventory)
 
 
 class TimerUpdate:
@@ -46,6 +51,12 @@ class TimerUpdate:
     def update(self):
         if self.day == 365:
             gui.label.config(text="COMPLETE!")
+            gui.inventory = {CITY: 0, SEA: 0, LAND: 0, GLACIER: 0, FOREST: 0}
+            for x in range(gui.width):
+                for y in range(gui.height):
+                    cell = gui.grid.cells_matrix[y][x]
+                    gui.inventory[cell.type] = gui.inventory[cell.type] + 1
+            print(gui.inventory)
         else:
             self.day += 1
             gui.grid.calculate_new_day()
@@ -64,7 +75,19 @@ class TimerUpdate:
 
 
 
-
 gui = Gui()
 tkinter.Button(text="Start", command=lambda: TimerUpdate(gui)).pack()
 gui.window.mainloop()
+
+print("[Temperature]\t\tMax: {:.2f}\tMin: {:.2f}\tAvg: {:.2f}\tStd. Dev: {:.2f}".format(max(ALL_TEMP_STATS), min(ALL_TEMP_STATS), statistics.mean(ALL_TEMP_STATS), statistics.stdev(ALL_TEMP_STATS)))
+print("[Air Pollution]\t\tMax: {:.2f}\tMin: {:.2f}\tAvg: {:.2f}\tStd. Dev: {:.2f}".format(max(ALL_AQI_STATS), min(ALL_AQI_STATS), statistics.mean(ALL_AQI_STATS), statistics.stdev(ALL_AQI_STATS)))
+
+f = open('temp.txt', 'w')
+for n in TEMP_AVERAGE:
+    f.write("{}\n".format(n))
+f.close()
+
+f = open('air.txt', 'w')
+for n in AQI_AVERAGE:
+    f.write("{}\n".format(n))
+f.close()

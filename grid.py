@@ -1,18 +1,9 @@
 from cell import Cell
 
-TEMP_STATS = []
-AQI_STATS = []
-
-# wind_changes_matrix = {
-#     (-10, -29, -31): (1, 1),
-#     (-20, -30, -21, -19): (1, 2),
-#     (10, 29, 31): (2, 1),
-#     (20, 30, 19, 21): (2, 2),
-#     (1, -7, 13): (3, 1),
-#     (2, 3, -8, 12): (3, 2),
-#     (-1, 7, -13): (4, 1),
-#     (-2, -3, 8, -12): (4, 2)
-# }
+TEMP_AVERAGE = []
+AQI_AVERAGE = []
+ALL_TEMP_STATS = []
+ALL_AQI_STATS = []
 
 wind_changes_matrix = {
     (-10, -9): (1, 1),
@@ -39,25 +30,23 @@ def load_map(filename):
 
 class Grid:
     def __init__(self):
-        self.day = 1
         self.cells_matrix = load_map("map.csv")
         self.width = len(self.cells_matrix[0])
         self.height = len(self.cells_matrix)
 
     def calculate_new_day(self):
-        NORTH = 0
-        SOUTH = 0
-        EAST = 0
-        WEST = 0
-        self.day += 1
         cloudiness_changes = [[0] * self.width for i in range(self.height)]
         polution_changes = [[0] * self.width for i in range(self.height)]
         wind_changes = [[0] * self.width for i in range(self.height)]
+        temp_day = []
+        air_day = []
         for x in range(self.height):
             for y in range(self.width):
                 cell = self.cells_matrix[x][y]
-                TEMP_STATS.append(cell.temperature)
-                AQI_STATS.append(cell.air_quality_index)
+                ALL_TEMP_STATS.append(cell.temperature)
+                temp_day.append(cell.temperature)
+                ALL_AQI_STATS.append(cell.air_quality_index)
+                air_day.append(cell.air_quality_index)
                 speed = cell.wind_speed
                 if speed > 0:
                     x_to_apply = (cell.wind_direction[0] * speed + x) % self.height
@@ -68,6 +57,8 @@ class Grid:
                     polution_changes[x][y] -= cell.air_quality_index
                     wind_changes[x_to_apply][y_to_apply] += cell.wind_direction[0] * speed * 10 \
                                                             + cell.wind_direction[1] * speed
+        TEMP_AVERAGE.append(sum(temp_day) / len(temp_day))
+        AQI_AVERAGE.append(sum(air_day) / len(air_day))
         # apply wind changes
         for x in range(self.height):
             for y in range(self.width):
@@ -83,23 +74,8 @@ class Grid:
                 else:
                     cell.wind_speed = (cell.wind_speed + 1) % 2
 
-                w = cell.wind_direction[0] * 10 + cell.wind_direction[1]
-                if w == -10:
-                    NORTH += 1
-                elif w == 10:
-                    SOUTH += 1
-                elif w == 1:
-                    EAST += 1
-                else:
-                    WEST += 1
-        print(f"{self.day} N: {NORTH}, S: {SOUTH}, E: {EAST}, W: {WEST}")
-
         # day transactions
         for x in range(self.height):
             for y in range(self.width):
                 cell = self.cells_matrix[x][y]
                 cell.day_transitions()
-        # print("-------------------")
-        # print(f"Day {self.day}")
-        # print(f"Average temp: {sum(TEMP_STATS) / len(TEMP_STATS)}")
-        # print(f"Average aqi: {sum(AQI_STATS) / len(AQI_STATS)}")
