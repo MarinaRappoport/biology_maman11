@@ -2,7 +2,9 @@ import tkinter
 
 from grid import Grid
 
-CELL_SIZE = 40
+CELL_WIDTH = 50
+CELL_HEIGHT = 30
+
 
 class Gui:
     def __init__(self):
@@ -15,20 +17,24 @@ class Gui:
         self.width = len(matrix[0])
         self.height = len(matrix)
         self.item_ids = [[0] * self.width for i in range(self.height)]
-        self.canvas = tkinter.Canvas(self.window, height=self.height * CELL_SIZE, width=self.width * CELL_SIZE)
+        self.canvas = tkinter.Canvas(self.window, height=self.height * CELL_HEIGHT, width=self.width * CELL_WIDTH)
         self.canvas.pack()
         for x in range(self.width):
             for y in range(self.height):
                 cell = matrix[y][x]
-                cell_id = self.canvas.create_rectangle(x * CELL_SIZE, y * CELL_SIZE, (x + 1) * CELL_SIZE,
-                                                       (y + 1) * CELL_SIZE,
+                cell_id = self.canvas.create_rectangle(x * CELL_WIDTH, y * CELL_HEIGHT, (x + 1) * CELL_WIDTH,
+                                                       (y + 1) * CELL_HEIGHT,
                                                        fill=cell.get_color())
-                temp_id = self.canvas.create_text((x + 0.3) * CELL_SIZE, (y + 0.7) * CELL_SIZE,
+                temp_id = self.canvas.create_text((x + 0.3) * CELL_WIDTH, (y + 0.7) * CELL_HEIGHT,
                                                   text="{}C".format(cell.temperature))
-                cloud_id = self.canvas.create_text((x + 0.7) * CELL_SIZE, (y + 0.3) * CELL_SIZE,
+                cloud_id = self.canvas.create_text((x + 0.7) * CELL_WIDTH, (y + 0.3) * CELL_HEIGHT,
                                                    text="{}%".format(cell.cloudiness),
                                                    fill="navy")
-                self.item_ids[y][x] = (cell_id, temp_id, cloud_id)
+                aqi_id = self.canvas.create_text((x + 0.3) * CELL_WIDTH, (y + 0.3) * CELL_HEIGHT,
+                                                 text="{}".format(cell.air_quality_index), fill="red")
+                wind_id = self.canvas.create_text((x + 0.7) * CELL_WIDTH, (y + 0.7) * CELL_HEIGHT,
+                                                  text="{}".format(cell.wind_direction[2 + cell.wind_speed]))
+                self.item_ids[y][x] = (cell_id, temp_id, cloud_id, aqi_id, wind_id)
 
 
 class TimerUpdate:
@@ -48,10 +54,15 @@ class TimerUpdate:
             for x in range(gui.width):
                 for y in range(gui.height):
                     cell = gui.grid.cells_matrix[y][x]
-                    (cell_id, temp_id, cloud_id) = gui.item_ids[y][x]
+                    (cell_id, temp_id, cloud_id, aqi_id, wind_id) = gui.item_ids[y][x]
                     gui.canvas.itemconfig(cell_id, fill=cell.get_color())
                     gui.canvas.itemconfig(temp_id, text="{}C".format(cell.temperature))
                     gui.canvas.itemconfig(cloud_id, text="{}%".format(cell.cloudiness))
+                    gui.canvas.itemconfig(aqi_id, text="{}".format(cell.air_quality_index))
+                    gui.canvas.itemconfig(wind_id, text="{}".format(cell.wind_direction[2 + cell.wind_speed]))
+
+
+
 
 
 gui = Gui()
