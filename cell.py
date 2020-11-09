@@ -4,7 +4,7 @@ GLACIER = 'G'
 FOREST = 'F'
 CITY = 'C'
 
-CITY_DAY_AIR_POLLUTION = 30
+CITY_DAY_AIR_POLLUTION = 40
 
 wind_direction = {
     1: (-1, 0, "", "↑"),  # NORTH
@@ -66,13 +66,13 @@ class Cell:
 
         # forest produces oxygen and decreases air pollution
         if self.type == FOREST:
-            air_quality_index_new -= 20
+            air_quality_index_new -= 30
             # when pollution is high, forest dies
             if self.air_quality_index >= 500:
                 type_new = LAND
 
         if self.type == GLACIER:
-            air_quality_index_new -= 10
+            air_quality_index_new -= 20
 
         # city increases air pollution
         if self.type == CITY:
