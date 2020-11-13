@@ -1,5 +1,5 @@
-import tkinter
 import statistics
+import tkinter
 
 from cell import CITY, SEA, LAND, GLACIER, FOREST
 from grid import Grid, TEMP_AVERAGE, AQI_AVERAGE, ALL_TEMP_STATS, ALL_AQI_STATS
@@ -73,14 +73,21 @@ class TimerUpdate:
                     gui.canvas.itemconfig(wind_id, text="{}".format(cell.wind_direction[2 + cell.wind_speed]))
 
 
-
-
 gui = Gui()
 tkinter.Button(text="Start", command=lambda: TimerUpdate(gui)).pack()
 gui.window.mainloop()
 
-print("[Temperature]\t\tMax: {:.2f}\tMin: {:.2f}\tAvg: {:.2f}\tStd. Dev: {:.2f}".format(max(ALL_TEMP_STATS), min(ALL_TEMP_STATS), statistics.mean(ALL_TEMP_STATS), statistics.stdev(ALL_TEMP_STATS)))
-print("[Air Pollution]\t\tMax: {:.2f}\tMin: {:.2f}\tAvg: {:.2f}\tStd. Dev: {:.2f}".format(max(ALL_AQI_STATS), min(ALL_AQI_STATS), statistics.mean(ALL_AQI_STATS), statistics.stdev(ALL_AQI_STATS)))
+print("[Temperature]\t\tMax: {:.2f}\tMin: {:.2f}\tAvg: {:.2f}\tStd. Dev: {:.2f}".format(max(ALL_TEMP_STATS),
+                                                                                        min(ALL_TEMP_STATS),
+                                                                                        statistics.mean(ALL_TEMP_STATS),
+                                                                                        statistics.stdev(
+                                                                                            ALL_TEMP_STATS)))
+print("[Air Pollution]\t\tMax: {:.2f}\tMin: {:.2f}\tAvg: {:.2f}\tStd. Dev: {:.2f}".format(max(ALL_AQI_STATS),
+                                                                                          min(ALL_AQI_STATS),
+                                                                                          statistics.mean(
+                                                                                              ALL_AQI_STATS),
+                                                                                          statistics.stdev(
+                                                                                              ALL_AQI_STATS)))
 
 f = open('temp.txt', 'w')
 for n in TEMP_AVERAGE:
